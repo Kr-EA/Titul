@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv-build/
+build/
+dist/
+*.spec
+.DS_Store
+.venv/
+venv/
+~$*
+README.md
