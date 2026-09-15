@@ -57,7 +57,17 @@ def main():
         shutil.copytree(DIST / "TitulUtil", stage / "TitulUtil", symlinks=True)
         shutil.copy2(ROOT / "packaging" / "install-linux.sh", stage / "install.sh")
         (stage / "install.sh").chmod(0o755)
-        shutil.copy2(ROOT / "README.md", stage / "README.md")
+        readme = next((path for path in ROOT.iterdir()
+                       if path.is_file() and path.name.lower() == "readme.md"), None)
+        if readme is not None:
+            shutil.copy2(readme, stage / "README.md")
+        else:
+            (stage / "README.md").write_text(
+                "# Titul Util\n\n"
+                "Распакуйте архив и выполните `sh install.sh`.\n"
+                "Приложение появится в меню приложений.\n",
+                encoding="utf-8",
+            )
         shutil.make_archive(str(installers / stage.name), "gztar", stage.parent, stage.name)
     print(f"Installers: {installers}")
 
