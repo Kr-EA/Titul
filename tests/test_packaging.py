@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import tarfile
 import tempfile
 import unittest
@@ -29,5 +30,10 @@ class LinuxPackagingTests(unittest.TestCase):
                     prefix = 'TitulUtil-linux-x86_64/'
                     readme = archive.extractfile(prefix + 'README.md').read().decode('utf-8')
                     self.assertIn('Project instructions' if filename else 'sh install.sh', readme)
-                    self.assertTrue(archive.getmember(prefix + 'install.sh').mode & 0o111)
+                    installer = archive.getmember(prefix + 'install.sh')
+                    self.assertTrue(installer.isfile())
+                    # Mocking platform.system() does not change host filesystem permissions.
+                    # Windows chmod cannot set POSIX executable bits.
+                    if os.name == 'posix':
+                        self.assertEqual(installer.mode & 0o777, 0o755)
                     self.assertIn(prefix + 'TitulUtil/TitulUtil', archive.getnames())
